@@ -8,69 +8,32 @@ import { Trend } from 'k6/metrics';
 
 export const options = {
     scenarios: {
-//        sc1: {
-//            executor: 'constant-arrival-rate',
-//            preAllocatedVUs: 5,
-//            timeUnit: '2s',
-//            maxVUs: 5,
-//            rate: 1,
-//            duration: '30s',
-//        },
-//        sc2: {
-//            executor: 'constant-vus',
-//            vus:5,
-//            duration: '100s',
-//        },
-        sc3: { //todo
+        sc3: {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-//                    { duration: '1s', target: 1 },
-//                    { duration: '10m', target: 1 },
                     { duration: '6s', target: 2 },
                     { duration: '10m', target: 2 },
-//                    { duration: '1s', target: 3 },
-//                    { duration: '10m', target: 3 },
                     { duration: '6s', target: 4 },
                     { duration: '10m', target: 4 },
-//                    { duration: '1s', target: 5 },
-//                    { duration: '10m', target: 5 },
                     { duration: '6s', target: 6 },
                     { duration: '10m', target: 6 },
-//                    { duration: '1s', target: 7 },
-//                    { duration: '10m', target: 7 },
                     { duration: '6s', target: 8 },
                     { duration: '10m', target: 8 },
-//                    { duration: '1s', target: 9 },
-//                    { duration: '10m', target: 9 },
                     { duration: '6s', target: 10 },
                     { duration: '10m', target: 10 },
-//                    { duration: '1s', target: 11 },
-//                    { duration: '10m', target: 11 },
                     { duration: '6s', target: 12 },
                     { duration: '10m', target: 12 },
-//                    { duration: '1s', target: 13 },
-//                    { duration: '10m', target: 13 },
                     { duration: '6s', target: 14 },
                     { duration: '10m', target: 14 },
-//                    { duration: '1s', target: 15 },
-//                    { duration: '10m', target: 15 },
                     { duration: '6s', target: 16 },
                     { duration: '10m', target: 16 },
-//                    { duration: '85s', target: 17 },
-//                    { duration: '10m', target: 17 },
                     { duration: '6s', target: 18 },
                     { duration: '10m', target: 18 },
-//                    { duration: '25s', target: 19 },
-//                    { duration: '10m', target: 19 },
                     { duration: '6s', target: 20 },
                     { duration: '10m', target: 20 },
-//                    { duration: '2s', target: 21 },
-//                    { duration: '10m', target: 21 },
                     { duration: '6s', target: 22 },
                     { duration: '10m', target: 22 },
-//                    { duration: '2s', target: 23 },
-//                    { duration: '10m', target: 23 },
                     { duration: '6s', target: 24 },
                     { duration: '10m', target: 24 },
                     { duration: '6s', target: 26 },
@@ -78,12 +41,6 @@ export const options = {
                   ],
             gracefulRampDown: '0s',
         },
-//        sc4: {
-//              executor: 'per-vu-iterations',
-//              vus: 1,
-//              iterations: 10,
-//              maxDuration: '60s',
-//          },
     },
 };
 const loginData = JSON.parse(open("./creds.json"));  // download the data file here: https://test.k6.io/static/examples/users.json
@@ -112,12 +69,9 @@ const    requestHeaders_8 = {
         'Upgrade-Insecure-Requests': '1'
     };
 
-//    headers: {'Accept-Encoding': 'gzip, deflate'}
-
 export default function () {
     var cycleTime = 12000;
     var startTime = Date.now();
-//    console.log('*********************************')
     get_root_page();
     loginininng();
     let AEROPORTS=click_flights_button();
@@ -150,9 +104,8 @@ export function pacing(cycleTime, startTime) {
     var endTime = Date.now();
     let duration = endTime - startTime;
     waitTime = cycleTime - duration;
-    // convert waitTime to seconds not milliseconds
     waitTime = waitTime / 1000;
-    console.log('********'+waitTime);
+//    console.log('********'+waitTime);
     if (waitTime<2){
         waitTime=0;
     }
@@ -198,25 +151,14 @@ export function loginininng(){
             },
             {headers:requestHeaders_8}// headers and params
             );
-//        console.log("*****************************************");
-//        console.log(resPost.body);
-//        console.log("*****************************************");
         // проверить содержимо еответа и если некоррекный пароль, сразу прервать пользователя
-        // добавиь batch
         if (check(resPost, {'User password was incorrect': (resPost) => resPost.body.includes('User password was incorrect.  Prompt the user to fix password or sign-up...')}))
             {
-//                console.log('________________________________________________________________________________________>')
                 fail('User password was incorrect '+ credentials.username+' '+credentials.password);
             }
         let res = http.batch([
             ["GET", BASE_URL+'/cgi-bin/nav.pl', {}, { tags: { 'page': "menu", 'in': 'home' }, headers:requestHeaders_0 }],
             ["GET", BASE_URL+'/cgi-bin/login.pl', {}, { tags: { 'intro': "true" }, headers:requestHeaders_0 }]]);
-//        checkRes = check(res[0], {
-//            'status code is 200': (res) => res.status === 200
-//        });
-//        checkRes = check(res[1], {
-//            'status code is 200': (res) => res.status === 200
-//        });
     });
 }
 
@@ -232,25 +174,13 @@ export function click_flights_button(){
         let res = http.batch([
             ["GET", BASE_URL+'/cgi-bin/nav.pl', {}, { tags: { 'page': "menu", 'in': 'flights' }, headers:requestHeaders_0 }],
             ["GET", BASE_URL+'/cgi-bin/reservations.pl', {}, { tags: { 'page': "welcome" }, headers:requestHeaders_0 }]]);
-//        console.log("*****************************************");
-//        console.log(res[1].body);
-//        console.log("*****************************************");
-        //todo применить регулярку, вытянуть аэропорты
-//        let AEROPORTS = findBetween(res[1].body, 'option(?!value=")[^>]+>','>', true)
-//        let AEROPORTS = findBetween(res[1].body, '">','</option>', true)
-//        let AEROPORTS = new RegExp('option?.+value=".+">(.+)<').exec( res[1].body)
         const reg=/option?.+value=".+">(.+)</g;
-//        let AEROPORTS = reg.exec( res[1].body)
         return [...res[1].body.matchAll(reg)]
     });
     return _aero;
 }
 
 export function aero_random_selected(aero){
-//    aero.forEach(_e => console.log(_e[1]))
-//    console.log('*********')
-//    console.log(aero[Math.floor(Math.random()*aero.length)][1])
-//    console.log('*********')
     let departure_aero='';
     let arrived_aero='';
     do {
@@ -451,15 +381,10 @@ export function cancele_checked_button_group(request_body){
 
 export function sign_off(){
     group('sign_off_group', ()=>{
-//        let startTime = Date.now();
         let _uri=url_encoded('/cgi-bin/welcome.pl',[['signOff','1']]);
         let resGet = http.get(_uri,{headers:requestHeaders_0});
 
         _uri=url_encoded('/cgi-bin/nav.pl',[['in','home']]);
         resGet = http.get(_uri,{headers:requestHeaders_0});
-//        let endTime = Date.now();
-
-//        groups_time.add(endTime-startTime, { group: "log_off"});
-
     });
 }
