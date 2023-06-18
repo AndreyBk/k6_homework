@@ -1,0 +1,7 @@
+{
+  "users": [
+    { "username": "rub", "password": "1234", "card":"11111111"},
+    { "username": "fog", "password": "1", "card":"22222222" },
+    { "username": "bkiv", "password": "123", "card":"741258963"}
+  ]
+}
